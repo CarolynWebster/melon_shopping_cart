@@ -116,8 +116,8 @@ def show_shopping_cart():
         total_cost = 0
         flash("You haven't selected any melons!")
 
-    return render_template("cart.html", 
-                            all_melons=all_ordered_melons, 
+    return render_template("cart.html",
+                            all_melons=all_ordered_melons,
                             order_cost=total_cost)
 
 
@@ -162,7 +162,7 @@ def show_login():
 
     return render_template("login.html")
 
-@app.route("/handle_login", methods=["POST"])
+@app.route("/login", methods=["POST"])
 def process_login():
     """Log user into site.
 
@@ -183,15 +183,25 @@ def process_login():
     #   message and redirect the user to the "/melons" route
     # - if they don't, flash a failure message and redirect back to "/login"
     # - do the same if a Customer with that email doesn't exist
-    import pdb; pdb.set_trace()
     
-    username = request.form['username']
+    #get inputs of username and password
+    username = request.form['email']
     password = request.form['password']
 
+    #check if that email is tied to a customer
     customer = customers.get_by_email(username)
 
-
-    return "Oops! This needs to be implemented"
+    #get_by_email returns False if customer doesn't exist
+    # if customer exists and their password matches
+    # log them in and add email to session
+    if customer is not False and customer.password == password:
+        session['user_email'] = customer.email
+        flash("You have successfully logged in!")
+        return redirect('/melons')
+    else:
+        print "elsing!"
+        flash("That username or password is incorrect! Try again.")
+        return redirect('/login')
 
 
 @app.route("/checkout")

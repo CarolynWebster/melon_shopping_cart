@@ -27,7 +27,10 @@ def get_customer_info():
     return customer_info
 
 def get_by_email(email):
+    try:
+        cust = customers[email]
+    except:
+        cust = False
+    return cust
 
-    return customers[email]
-
-all_customers = get_customer_info()
+customers = get_customer_info()
