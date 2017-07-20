@@ -7,10 +7,11 @@ Authors: Joel Burton, Christian Fernandez, Meggie Mahnken, Katie Byers.
 """
 
 
-from flask import Flask, render_template, redirect, flash, session
+from flask import Flask, render_template, redirect, flash, session, request
 import jinja2
 
 import melons
+import customers
 
 
 app = Flask(__name__)
@@ -51,7 +52,7 @@ def show_melon(melon_id):
     """
 
     melon = melons.get_by_id(melon_id)
-    print melon
+
     return render_template("melon_details.html",
                            display_melon=melon)
 
@@ -77,37 +78,43 @@ def show_shopping_cart():
     #
     # Make sure your function can also handle the case wherein no cart has
     # been added to the session
-    current_cart = session['cart']
 
-    #start with blank total cost and blank order list
-    total_cost = 0.0
-    all_ordered_melons = []
+    if 'cart' in session:
+        current_cart = session['cart']
 
-    #iterate through cart and add total cost and quantity to melon obj
-    for item in current_cart:
-        #get count from the session cart dictionart
-        melon_count = current_cart[item]
+        #start with blank total cost and blank order list
+        total_cost = 0.0
+        all_ordered_melons = []
 
-        #get melon object using function from melons
-        melon_info = melons.get_by_id(item)
+        #iterate through cart and add total cost and quantity to melon obj
+        for item in current_cart:
+            #get count from the session cart dictionart
+            melon_count = current_cart[item]
 
-        #get price from that melon object
-        melon_price = melon_info.price
+            #get melon object using function from melons
+            melon_info = melons.get_by_id(item)
 
-        #get the total cost of this melon based on count and price
-        this_melon_order_total = melon_count * melon_price
+            #get price from that melon object
+            melon_price = melon_info.price
 
-        #add quantity attribute to melon object
-        melon_info.quantity = melon_count
+            #get the total cost of this melon based on count and price
+            this_melon_order_total = melon_count * melon_price
 
-        #add total cost of this quanitity of this melon to the melon object
-        melon_info.indv_total = this_melon_order_total
+            #add quantity attribute to melon object
+            melon_info.quantity = melon_count
 
-        #add the total cost of this quantity to the overall total cost
-        total_cost += this_melon_order_total
+            #add total cost of this quanitity of this melon to the melon object
+            melon_info.indv_total = this_melon_order_total
 
-        #add the melon object to the all ordered melons list
-        all_ordered_melons.append(melon_info)
+            #add the total cost of this quantity to the overall total cost
+            total_cost += this_melon_order_total
+
+            #add the melon object to the all ordered melons list
+            all_ordered_melons.append(melon_info)
+    else:
+        all_ordered_melons = []
+        total_cost = 0
+        flash("You haven't selected any melons!")
 
     return render_template("cart.html", 
                             all_melons=all_ordered_melons, 
@@ -155,8 +162,7 @@ def show_login():
 
     return render_template("login.html")
 
-
-@app.route("/login", methods=["POST"])
+@app.route("/handle_login", methods=["POST"])
 def process_login():
     """Log user into site.
 
@@ -177,6 +183,13 @@ def process_login():
     #   message and redirect the user to the "/melons" route
     # - if they don't, flash a failure message and redirect back to "/login"
     # - do the same if a Customer with that email doesn't exist
+    import pdb; pdb.set_trace()
+    
+    username = request.form['username']
+    password = request.form['password']
+
+    customer = customers.get_by_email(username)
+
 
     return "Oops! This needs to be implemented"
 

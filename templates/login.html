@@ -4,13 +4,13 @@
 </head>
 <body>
 
-<form class="form-signin" method="POST">
+<form action="/handle_login" class="form-signin" method="POST">
 
   <h2 class="form-signin-heading">Please Sign In</h2>
 
   <div class="form-group">
     <label for="email-field" class="sr-only">Email Address</label>
-    <input type="email"
+    <input type="text"
            name="email"
            class="form-control input-lg"
            placeholder="Email Address"
@@ -20,7 +20,7 @@
 
   <div class="form-group">
     <label for="password-field" class="sr-only">Password</label>
-    <input type="password"
+    <input type="text"
            name="password"
            class="form-control input-lg"
            placeholder="Password"
